@@ -58,30 +58,34 @@ def getStem(dirpath, projectdir):
     return stemdir
 
 
-def getInfoFromFilename(filename, dictInfo, logger):
+def getInfoFromFilename(filename: str, dictInfo: dict, logger, filename_convention: str = "base"):
     # 5 AR: WE need to rework this, not being used in gfdl set up  get the following from the netCDF filename
     # e.g.rlut_Amon_GFDL-ESM4_histSST_r1i1p1f1_gr1_195001-201412.nc print(filename)
-    if filename.endswith(".nc"):
-        ncfilename = filename.split(".")[0].split("_")
-        varname = ncfilename[0]
-        dictInfo["variable"] = varname
-        miptable = ncfilename[1]
-        dictInfo["mip_table"] = miptable
-        modelname = ncfilename[2]
-        dictInfo["model"] = modelname
-        expname = ncfilename[3]
-        dictInfo["experiment_id"] = expname
-        ens = ncfilename[4]
-        dictInfo["ensemble_member"] = ens
-        grid = ncfilename[5]
-        dictInfo["grid_label"] = grid
-        try:
-            tsubset = ncfilename[6]
-        except IndexError:
-            tsubset = "null"  # For fx fields
-        dictInfo["temporal_subset"] = tsubset
+    if filename_convention == "base":
+        if filename.endswith(".nc"):
+            ncfilename = filename.split(".")[0].split("_")
+            varname = ncfilename[0]
+            dictInfo["variable"] = varname
+            miptable = ncfilename[1]
+            dictInfo["mip_table"] = miptable
+            modelname = ncfilename[2]
+            dictInfo["model"] = modelname
+            expname = ncfilename[3]
+            dictInfo["experiment_id"] = expname
+            ens = ncfilename[4]
+            dictInfo["ensemble_member"] = ens
+            grid = ncfilename[5]
+            dictInfo["grid_label"] = grid
+            try:
+                tsubset = ncfilename[6]
+            except IndexError:
+                tsubset = "null"  # For fx fields
+            dictInfo["temporal_subset"] = tsubset
+        else:
+            logger.debug("Filename not compatible with this version of the builder:" + filename)
     else:
-        logger.debug("Filename not compatible with this version of the builder:" + filename)
+        pass
+
     return dictInfo
 
 
@@ -112,7 +116,7 @@ def getInfoFromGFDLFilename(filename, dictInfo, logger):
     return dictInfo
 
 
-def getInfoFromGFDLDRS(dirpath, projectdir, dictInfo):
+def getInfoFromGFDLDRS(dirpath: str, projectdir: str, dictInfo: dict):
     """
     Returns info from project directory and the DRS path to the file
     :param dirpath:
